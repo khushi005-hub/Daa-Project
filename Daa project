@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALGO NEXUS — Intelligent Algorithm Visualization & Performance Lab</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            900: '#0a0f1d',
+                            800: '#0f172a',
+                            700: '#1e293b',
+                            600: '#334155'
+                        },
+                        neon: {
+                            cyan: '#00f0ff',
+                            violet: '#a855f7',
+                            pink: '#ec4899',
+                            green: '#10b981',
+                            amber: '#f59e0b'
+                        }
+                    },
+                    boxShadow: {
+                        'neon-cyan': '0 0 15px rgba(0, 240, 255, 0.4)',
+                        'neon-violet': '0 0 15px rgba(168, 85, 247, 0.4)'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome & Lucide Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #070b14;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+        .code-font {
+            font-family: 'Fira Code', monospace;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0f1d;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f0ff;
+        }
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 240, 255, 0.15);
+        }
+        .glass-panel-violet {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(168, 85, 247, 0.15);
+        }
+        .neon-border-cyan {
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+            border: 1px solid rgba(0, 240, 255, 0.4);
+        }
+        .neon-border-violet {
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+        }
+        /* Pulse Animation */
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
+        }
+        .animate-glow {
+            animation: glowPulse 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="glass-panel sticky top-0 z-50 px-4 py-3 border-b border-cyan-500/20">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('visualizer')">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-neon-cyan to-neon-violet flex items-center justify-center text-navy-900 font-extrabold text-xl shadow-neon-cyan">
+                    <i class="fa-solid to-navy-900 fa-diagram-project"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan via-white to-neon-violet text-lg md:text-xl tracking-wide">
+                        ALGO<span class="text-neon-cyan">NEXUS</span>
+                    </h1>
+                    <p class="text-[10px] text-cyan-400/80 tracking-widest uppercase font-mono">MCA Algorithm Lab & Visualizer</p>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="flex items-center space-x-1 md:space-x-2 overflow-x-auto py-1">
+                <button onclick="switchTab('visualizer')" id="nav-visualizer" class="nav-btn active px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 flex items-center space-x-2 bg-cyan-500/20 text-neon-cyan border border-cyan-500/40">
+                    <i class="fa-solid fa-play text-xs"></i>
+                    <span>Visualizer</span>
+                </button>
+                <button onclick="switchTab('recommender')" id="nav-recommender" class="nav-btn px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all duration-200 flex items-center space-x-2">
+                    <i class="fa-solid fa-brain text-xs"></i>
+                    <span>Recommender</span>
+                </button>
+                <button onclick="switchTab('benchmarks')" id="nav-benchmarks" class="nav-btn px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all duration-200 flex items-center space-x-2">
+                    <i class="fa-solid fa-chart-line text-xs"></i>
+                    <span>Performance Lab</span>
+                </button>
+                <button onclick="switchTab('viva')" id="nav-viva" class="nav-btn px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all duration-200 flex items-center space-x-2">
+                    <i class="fa-solid fa-book-open text-xs"></i>
+                    <span>DAA Prep & Viva</span>
+                </button>
+                <button onclick="switchTab('quiz')" id="nav-quiz" class="nav-btn px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all duration-200 flex items-center space-x-2">
+                    <i class="fa-solid fa-gamepad text-xs"></i>
+                    <span>Quiz Engine</span>
+                </button>
+                <button onclick="switchTab('backend')" id="nav-backend" class="nav-btn px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all duration-200 flex items-center space-x-2">
+                    <i class="fa-solid fa-code text-xs"></i>
+                    <span>Backend & Docs</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6">
+
+        <!-- ========================================== -->
+        <!-- TAB 1: FULL VISUALIZER MODULE              -->
+        <!-- ========================================== -->
+        <section id="tab-visualizer" class="tab-content space-y-6">
+            <!-- Controls Header -->
+            <div class="glass-panel p-4 md:p-6 rounded-2xl border border-slate-800 space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
+                    <!-- Algorithm Selector -->
+                    <div>
+                        <label class="block text-xs font-mono text-cyan-400 mb-1 uppercase tracking-wider">Select Algorithm</label>
+                        <select id="algo-select" onchange="onAlgoChange()" class="bg-navy-900 text-white text-sm font-semibold rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-neon-cyan w-full md:w-64 cursor-pointer">
+                            <optgroup label="Sorting Algorithms">
+                                <option value="bubble" selected>Bubble Sort</option>
+                                <option value="selection">Selection Sort</option>
+                                <option value="insertion">Insertion Sort</option>
+                                <option value="merge">Merge Sort</option>
+                                <option value="quick">Quick Sort</option>
+                            </optgroup>
+                            <optgroup label="Searching Algorithms">
+                                <option value="linear">Linear Search</option>
+                                <option value="binary">Binary Search (Auto-sorts)</option>
+                            </optgroup>
+                            <optgroup label="Graph Algorithms">
+                                <option value="bfs">Breadth-First Search (BFS)</option>
+                                <option value="dfs">Depth-First Search (DFS)</option>
+                                <option value="dijkstra">Dijkstra's Shortest Path</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <!-- Array Controls (Shown only for Sorting/Searching) -->
+                    <div id="array-controls" class="flex flex-wrap items-center gap-4">
+                        <div>
+                            <label class="block text-xs font-mono text-slate-400 mb-1">Array Size: <span id="size-val" class="text-neon-cyan font-bold">15</span></label>
+                            <input type="range" id="array-size" min="5" max="30" value="15" oninput="generateNewArray()" class="w-28 md:w-36 accent-neon-cyan cursor-pointer">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-mono text-slate-400 mb-1">Target Search Value</label>
+                            <input type="number" id="target-value" value="42" class="bg-navy-900 border border-slate-700 text-xs rounded-lg px-2 py-1.5 w-20 text-center text-neon-cyan focus:outline-none focus:border-neon-cyan">
+                        </div>
+                        <div class="flex items-end">
+                            <button onclick="generateNewArray()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-xs text-white transition-all">
+                                <i class="fa-solid fa-shuffle mr-1"></i> Randomize Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Graph Controls (Shown only for Graph Algos) -->
+                    <div id="graph-controls" class="hidden flex-wrap items-center gap-3">
+                        <button onclick="resetGraphToDefault()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-xs text-white">
+                            <i class="fa-solid fa-rotate-left mr-1"></i> Reset Graph
+                        </button>
+                        <button onclick="clearGraphCanvas()" class="px-3 py-1.5 bg-red-950/60 border border-red-800 hover:bg-red-900/60 rounded-lg text-xs text-red-300">
+                            <i class="fa-solid fa-trash mr-1"></i> Clear Nodes
+                        </button>
+                        <span class="text-xs text-slate-400 font-mono hidden md:inline">Click empty area to add node. Click node then drag to another to connect.</span>
+                    </div>
+                </div>
+
+                <!-- Playback & Speed Controls -->
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex items-center space-x-2">
+                        <button id="btn-step-back" onclick="stepBackward()" class="px-3 py-2 bg-navy-900 hover:bg-slate-800 border border-slate-700 text-white rounded-lg text-xs disabled:opacity-40" title="Step Back">
+                            <i class="fa-solid fa-backward-step"></i>
+                        </button>
+                        <button id="btn-play" onclick="togglePlayPause()" class="px-5 py-2 bg-gradient-to-r from-neon-cyan to-blue-600 text-navy-900 font-bold rounded-lg text-sm shadow-neon-cyan hover:opacity-90 transition-all flex items-center space-x-2">
+                            <i id="play-icon" class="fa-solid fa-play"></i>
+                            <span id="play-text">Start Step execution</span>
+                        </button>
+                        <button id="btn-step-forward" onclick="stepForward()" class="px-3 py-2 bg-navy-900 hover:bg-slate-800 border border-slate-700 text-white rounded-lg text-xs disabled:opacity-40" title="Step Forward">
+                            <i class="fa-solid fa-forward-step"></i>
+                        </button>
+                        <button onclick="resetVisualization()" class="px-3 py-2 bg-navy-900 hover:bg-slate-800 border border-slate-700 text-slate-300 rounded-lg text-xs">
+                            <i class="fa-solid fa-rotate mr-1"></i> Reset
+                        </button>
+                    </div>
+
+                    <!-- Speed Control Slider -->
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-gauge-high text-xs text-neon-cyan"></i>
+                        <span class="text-xs font-mono text-slate-400">Speed:</span>
+                        <input type="range" id="speed-slider" min="50" max="1000" value="400" dir="rtl" class="w-24 md:w-32 accent-neon-violet cursor-pointer">
+                        <span id="speed-display" class="text-xs font-mono text-neon-violet font-bold">1x</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visualization Canvas / Display Area -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Main Visual Display (2 Cols) -->
+                <div class="lg:col-span-2 glass-panel p-6 rounded-2xl relative min-h-[380px] flex flex-col justify-between overflow-hidden">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <span class="inline-block w-2.5 h-2.5 rounded-full bg-neon-cyan animate-pulse"></span>
+                            <h3 id="visual-title" class="text-sm font-mono font-bold text-slate-200">Execution Canvas</h3>
+                        </div>
+                        <div class="text-xs font-mono px-2.5 py-1 rounded bg-navy-900 text-cyan-400 border border-slate-800" id="step-counter">
+                            Step 0 / 0
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Render Container (Bar Chart or Canvas Graph) -->
+                    <div id="render-area" class="w-full flex-grow flex items-end justify-center min-h-[280px] relative border border-slate-800/60 rounded-xl bg-navy-900/60 p-4">
+                        <!-- Bars Container (Sorting/Searching) -->
+                        <div id="bars-container" class="w-full h-full flex items-end justify-center space-x-1.5 md:space-x-2"></div>
+                        <!-- Canvas Node Editor (Graph) -->
+                        <canvas id="graph-canvas" class="hidden absolute inset-0 w-full h-full cursor-crosshair"></canvas>
+                    </div>
+
+                    <!-- Color Legend Bar -->
+                    <div class="mt-4 flex flex-wrap items-center justify-around gap-2 text-[11px] font-mono text-slate-400 bg-navy-900/90 p-2 rounded-lg border border-slate-800">
+                        <div class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded bg-cyan-500 inline-block"></span><span>Default</span></div>
+                        <div class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded bg-amber-400 inline-block"></span><span>Comparing/Active</span></div>
+                        <div class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded bg-pink-500 inline-block"></span><span>Swapping/Updating</span></div>
+                        <div class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded bg-emerald-500 inline-block"></span><span>Sorted/Visited</span></div>
+                    </div>
+                </div>
+
+                <!-- Execution Stats & Trace Panel -->
+                <div class="glass-panel p-6 rounded-2xl flex flex-col justify-between space-y-4">
+                    <div>
+                        <h3 class="text-xs font-mono uppercase tracking-wider text-neon-violet mb-3 font-bold flex items-center">
+                            <i class="fa-solid fa-terminal mr-2"></i> Execution Log & Metrics
+                        </h3>
+                        <!-- Metrics Grid -->
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div class="bg-navy-900 p-3 rounded-lg border border-slate-800">
+                                <span class="block text-[10px] font-mono text-slate-400">Comparisons / Operations</span>
+                                <span id="stat-comparisons" class="text-xl font-mono font-bold text-neon-cyan">0</span>
+                            </div>
+                            <div class="bg-navy-900 p-3 rounded-lg border border-slate-800">
+                                <span class="block text-[10px] font-mono text-slate-400">Swaps / Updates</span>
+                                <span id="stat-swaps" class="text-xl font-mono font-bold text-neon-violet">0</span>
+                            </div>
+                        </div>
+
+                        <!-- Current Step Narrative Explanation -->
+                        <div class="bg-navy-900 p-3 rounded-lg border border-slate-800 mb-4 min-h-[90px]">
+                            <span class="block text-[10px] font-mono text-slate-500 mb-1 uppercase">Step Status</span>
+                            <p id="step-narration" class="text-xs font-mono text-slate-300 leading-relaxed">
+                                Select an algorithm and click Start Execution to visualize step-by-step processing.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Pseudocode Viewer with Active Highlight -->
+                    <div>
+                        <span class="block text-[10px] font-mono text-slate-400 mb-1 uppercase">Algorithm Pseudocode</span>
+                        <div id="pseudocode-box" class="bg-navy-900/90 border border-slate-800 rounded-lg p-3 text-xs code-font text-slate-300 space-y-1 overflow-x-auto max-h-48">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 2: INTELLIGENT ALGORITHM RECOMMENDER   -->
+        <!-- ========================================== -->
+        <section id="tab-recommender" class="tab-content hidden space-y-6">
+            <div class="glass-panel p-6 rounded-2xl border border-cyan-500/20 max-w-4xl mx-auto">
+                <div class="border-b border-slate-800 pb-4 mb-6">
+                    <h2 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-white flex items-center">
+                        <i class="fa-solid fa-brain mr-3 text-neon-cyan"></i> Intelligent Algorithm Selection Engine
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Input your problem parameters to get an expert DAA algorithm recommendation with full asymptotic reasoning.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Input Parameters Form -->
+                    <div class="space-y-4 bg-navy-900/60 p-4 rounded-xl border border-slate-800">
+                        <h3 class="text-xs font-mono text-neon-cyan uppercase tracking-wider font-semibold">1. Input Dataset Characteristics</h3>
+                        
+                        <div>
+                            <label class="block text-xs font-mono text-slate-300 mb-1">Data Structure Type</label>
+                            <select id="rec-ds-type" onchange="toggleRecommenderFields()" class="w-full bg-navy-900 border border-slate-700 text-xs rounded-lg p-2.5 text-white focus:border-neon-cyan">
+                                <option value="array">Linear Array / Sequence</option>
+                                <option value="graph">Graph / Network Nodes</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-mono text-slate-300 mb-1">Data Scale (Element Count N)</label>
+                            <select id="rec-data-scale" class="w-full bg-navy-900 border border-slate-700 text-xs rounded-lg p-2.5 text-white focus:border-neon-cyan">
+                                <option value="small">Small (N &lt; 50)</option>
+                                <option value="medium">Medium (50 &le; N &le; 10,000)</option>
+                                <option value="large">Large Scale (N &gt; 100,000)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-mono text-slate-300 mb-1">Initial Data Ordering State</label>
+                            <select id="rec-data-state" class="w-full bg-navy-900 border border-slate-700 text-xs rounded-lg p-2.5 text-white focus:border-neon-cyan">
+                                <option value="unsorted">Unsorted / Random</option>
+                                <option value="nearly_sorted">Nearly Sorted / Partially Ordered</option>
+                                <option value="reverse">Reverse Sorted Order</option>
+                                <option value="duplicates">Contains Many Duplicate Keys</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-mono text-slate-300 mb-1">Primary Optimization Priority</label>
+                            <select id="rec-priority" class="w-full bg-navy-900 border border-slate-700 text-xs rounded-lg p-2.5 text-white focus:border-neon-cyan">
+                                <option value="time">Time Complexity (Maximum Execution Speed)</option>
+                                <option value="space">Space Complexity (Minimal Memory Footprint - In-Place)</option>
+                                <option value="simplicity">Code Simplicity & Maintainability</option>
+                            </select>
+                        </div>
+
+                        <button onclick="calculateRecommendation()" class="w-full py-3 bg-gradient-to-r from-neon-cyan to-neon-violet text-navy-900 font-extrabold rounded-lg text-sm shadow-neon-cyan hover:opacity-90 transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>Generate Recommendation</span>
+                        </button>
+                    </div>
+
+                    <!-- Recommendation Output Display -->
+                    <div id="rec-output-box" class="glass-panel-violet p-5 rounded-xl flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-[10px] font-mono uppercase bg-neon-violet/20 text-neon-violet px-2.5 py-1 rounded border border-neon-violet/30 font-bold">Optimal Pick</span>
+                                <span class="text-[10px] font-mono text-slate-400" id="rec-confidence">Match Confidence: 98%</span>
+                            </div>
+                            <h3 id="rec-algo-title" class="text-2xl font-extrabold text-white mb-2">Quick Sort</h3>
+                            <p id="rec-algo-desc" class="text-xs text-slate-300 leading-relaxed mb-4">
+                                Excellent average-case time efficiency with O(1) auxiliary space when implemented in-place.
+                            </p>
+
+                            <!-- Big-O Badge Summary -->
+                            <div class="grid grid-cols-2 gap-2 mb-4">
+                                <div class="bg-navy-900/80 p-2.5 rounded border border-slate-800">
+                                    <span class="block text-[10px] font-mono text-slate-400">Time Complexity</span>
+                                    <span id="rec-time-complexity" class="text-xs font-mono font-bold text-neon-cyan">O(N log N)</span>
+                                </div>
+                                <div class="bg-navy-900/80 p-2.5 rounded border border-slate-800">
+                                    <span class="block text-[10px] font-mono text-slate-400">Auxiliary Space</span>
+                                    <span id="rec-space-complexity" class="text-xs font-mono font-bold text-neon-violet">O(log N)</span>
+                                </div>
+                            </div>
+
+                            <!-- Detailed Rationale -->
+                            <div class="space-y-2">
+                                <h4 class="text-xs font-mono text-slate-300 font-semibold uppercase">Why this choice?</h4>
+                                <ul id="rec-reasons-list" class="text-xs text-slate-400 space-y-1.5 list-disc list-inside font-mono">
+                                    <li>Divides array around pivot for fast in-place processing.</li>
+                                    <li>Outperforms Merge Sort in cache-locality and memory requirements.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t border-slate-800">
+                            <button onclick="launchRecommendedVisualizer()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-neon-cyan border border-cyan-500/40 rounded-lg text-xs font-mono flex items-center justify-center space-x-2">
+                                <span>Load into Visualizer</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 3: PERFORMANCE BENCHMARK LAB          -->
+        <!-- ========================================== -->
+        <section id="tab-benchmarks" class="tab-content hidden space-y-6">
+            <div class="glass-panel p-6 rounded-2xl border border-slate-800">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4 mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center">
+                            <i class="fa-solid fa-chart-line mr-3 text-neon-cyan"></i> Real-time Performance Lab
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">Simulate and compare empirical execution times & operations across different data distributions.</p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div>
+                            <label class="block text-[10px] font-mono text-slate-400 mb-0.5">Benchmark Data Scale</label>
+                            <select id="bench-scale" class="bg-navy-900 border border-slate-700 text-xs rounded-lg px-2.5 py-1.5 text-white">
+                                <option value="100">100 Elements</option>
+                                <option value="500" selected>500 Elements</option>
+                                <option value="1000">1,000 Elements</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-mono text-slate-400 mb-0.5">Distribution</label>
+                            <select id="bench-type" class="bg-navy-900 border border-slate-700 text-xs rounded-lg px-2.5 py-1.5 text-white">
+                                <option value="random">Random Unsorted</option>
+                                <option value="sorted">Already Sorted</option>
+                                <option value="reverse">Reverse Sorted</option>
+                                <option value="duplicates">Many Duplicates</option>
+                            </select>
+                        </div>
+                        <button onclick="runBenchmarkSuite()" class="mt-4 md:mt-0 px-4 py-2 bg-gradient-to-r from-neon-cyan to-blue-600 text-navy-900 font-bold rounded-lg text-xs shadow-neon-cyan">
+                            <i class="fa-solid fa-bolt mr-1"></i> Run Benchmark
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Custom Canvas Chart & Matrix Table -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Chart View -->
+                    <div class="bg-navy-900/80 p-4 rounded-xl border border-slate-800">
+                        <h3 class="text-xs font-mono text-slate-300 font-bold mb-3 flex items-center justify-between">
+                            <span>Execution Time Comparison (Milliseconds)</span>
+                            <span class="text-[10px] font-normal text-slate-500">Lower is better</span>
+                        </h3>
+                        <div class="relative h-64 w-full flex items-end justify-center">
+                            <canvas id="benchmark-chart" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Results Table -->
+                    <div class="bg-navy-900/80 p-4 rounded-xl border border-slate-800 overflow-x-auto">
+                        <h3 class="text-xs font-mono text-slate-300 font-bold mb-3">Empirical Operations Matrix</h3>
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-800 text-[11px] font-mono text-slate-400 uppercase">
+                                    <th class="p-2">Algorithm</th>
+                                    <th class="p-2">Time (ms)</th>
+                                    <th class="p-2">Comparisons</th>
+                                    <th class="p-2">Swaps / Writes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bench-table-body" class="text-xs font-mono divide-y divide-slate-800/50">
+                                <!-- Populated dynamically -->
+                                <tr>
+                                    <td class="p-2 text-slate-400" colspan="4">Click "Run Benchmark" to execute performance tests.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 4: DAA LEARNING HUB & VIVA PREP       -->
+        <!-- ========================================== -->
+        <section id="tab-viva" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Big-O Reference Cheat Sheet -->
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800 lg:col-span-1 space-y-4">
+                    <h3 class="text-sm font-bold text-neon-cyan uppercase font-mono flex items-center">
+                        <i class="fa-solid fa-layer-group mr-2"></i> Big-O Hierarchy Reference
+                    </h3>
+                    <div class="space-y-2 text-xs font-mono">
+                        <div class="p-2.5 rounded bg-navy-900 border border-emerald-500/30 flex items-center justify-between">
+                            <span class="text-emerald-400 font-bold">O(1)</span>
+                            <span class="text-slate-400">Constant Time</span>
+                        </div>
+                        <div class="p-2.5 rounded bg-navy-900 border border-green-500/30 flex items-center justify-between">
+                            <span class="text-green-400 font-bold">O(log N)</span>
+                            <span class="text-slate-400">Logarithmic (Binary Search)</span>
+                        </div>
+                        <div class="p-2.5 rounded bg-navy-900 border border-cyan-500/30 flex items-center justify-between">
+                            <span class="text-cyan-400 font-bold">O(N)</span>
+                            <span class="text-slate-400">Linear (Linear Search)</span>
+                        </div>
+                        <div class="p-2.5 rounded bg-navy-900 border border-blue-500/30 flex items-center justify-between">
+                            <span class="text-blue-400 font-bold">O(N log N)</span>
+                            <span class="text-slate-400">Linearithmic (Merge/Quick)</span>
+                        </div>
+                        <div class="p-2.5 rounded bg-navy-900 border border-amber-500/30 flex items-center justify-between">
+                            <span class="text-amber-400 font-bold">O(N²)</span>
+                            <span class="text-slate-400">Quadratic (Bubble/Selection)</span>
+                        </div>
+                        <div class="p-2.5 rounded bg-navy-900 border border-red-500/30 flex items-center justify-between">
+                            <span class="text-red-400 font-bold">O(2ᴺ)</span>
+                            <span class="text-slate-400">Exponential (Recursive Subset)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Viva Voce Questions & Answers Accordion -->
+                <div class="glass-panel p-6 rounded-2xl border border-slate-800 lg:col-span-2 space-y-4">
+                    <div class="border-b border-slate-800 pb-3">
+                        <h2 class="text-lg font-bold text-white flex items-center">
+                            <i class="fa-solid fa-graduation-cap mr-2 text-neon-violet"></i> MCA Viva Voce Question Bank
+                        </h2>
+                        <p class="text-xs text-slate-400">Frequently asked Design and Analysis of Algorithms exam viva questions.</p>
+                    </div>
+
+                    <div id="viva-accordion" class="space-y-3">
+                        <!-- Item 1 -->
+                        <div class="border border-slate-800 rounded-xl overflow-hidden bg-navy-900/60">
+                            <button onclick="toggleVivaAnswer(1)" class="w-full text-left p-3.5 text-xs font-semibold text-slate-200 flex items-center justify-between hover:bg-slate-800/40">
+                                <span>Q1: What is the primary difference between Quick Sort and Merge Sort?</span>
+                                <i id="viva-icon-1" class="fa-solid fa-chevron-down text-slate-500"></i>
+                            </button>
+                            <div id="viva-ans-1" class="hidden p-3.5 pt-0 text-xs text-slate-400 leading-relaxed border-t border-slate-800/40 font-mono bg-navy-900">
+                                Quick Sort is an in-place divide-and-conquer algorithm with average O(N log N) time and O(log N) auxiliary space, but can degrade to O(N²) worst-case. Merge Sort guarantees O(N log N) in all cases, but requires O(N) additional memory buffer for merging subarrays.
+                            </div>
+                        </div>
+
+                        <!-- Item 2 -->
+                        <div class="border border-slate-800 rounded-xl overflow-hidden bg-navy-900/60">
+                            <button onclick="toggleVivaAnswer(2)" class="w-full text-left p-3.5 text-xs font-semibold text-slate-200 flex items-center justify-between hover:bg-slate-800/40">
+                                <span>Q2: Why does Dijkstra's algorithm fail with negative edge weights?</span>
+                                <i id="viva-icon-2" class="fa-solid fa-chevron-down text-slate-500"></i>
+                            </button>
+                            <div id="viva-ans-2" class="hidden p-3.5 pt-0 text-xs text-slate-400 leading-relaxed border-t border-slate-800/40 font-mono bg-navy-900">
+                                Dijkstra operates on a greedy assumption that adding edges can only increase total path weight. A negative edge can create a shorter path to an already "visited" node, which Dijkstra will ignore, producing incorrect shortest path values. Use Bellman-Ford algorithm instead.
+                            </div>
+                        </div>
+
+                        <!-- Item 3 -->
+                        <div class="border border-slate-800 rounded-xl overflow-hidden bg-navy-900/60">
+                            <button onclick="toggleVivaAnswer(3)" class="w-full text-left p-3.5 text-xs font-semibold text-slate-200 flex items-center justify-between hover:bg-slate-800/40">
+                                <span>Q3: Explain the concept of Dynamic Programming versus Greedy Choice.</span>
+                                <i id="viva-icon-3" class="fa-solid fa-chevron-down text-slate-500"></i>
+                            </button>
+                            <div id="viva-ans-3" class="hidden p-3.5 pt-0 text-xs text-slate-400 leading-relaxed border-t border-slate-800/40 font-mono bg-navy-900">
+                                Greedy algorithms make locally optimal choices at each step without reconsidering past decisions. Dynamic Programming solves complex problems by breaking them into overlapping subproblems, storing results (memoization/tabulation) to avoid redundant computations.
+                            </div>
+                        </div>
+
+                        <!-- Item 4 -->
+                        <div class="border border-slate-800 rounded-xl overflow-hidden bg-navy-900/60">
+                            <button onclick="toggleVivaAnswer(4)" class="w-full text-left p-3.5 text-xs font-semibold text-slate-200 flex items-center justify-between hover:bg-slate-800/40">
+                                <span>Q4: What constitutes a Stable Sorting Algorithm?</span>
+                                <i id="viva-icon-4" class="fa-solid fa-chevron-down text-slate-500"></i>
+                            </button>
+                            <div id="viva-ans-4" class="hidden p-3.5 pt-0 text-xs text-slate-400 leading-relaxed border-t border-slate-800/40 font-mono bg-navy-900">
+                                A sorting algorithm is stable if two records with equal keys appear in the same relative order in the sorted output as they were in the original unsorted input (e.g., Merge Sort, Insertion Sort, Bubble Sort).
+                            </div>
+                        </div>
+
+                        <!-- Item 5 -->
+                        <div class="border border-slate-800 rounded-xl overflow-hidden bg-navy-900/60">
+                            <button onclick="toggleVivaAnswer(5)" class="w-full text-left p-3.5 text-xs font-semibold text-slate-200 flex items-center justify-between hover:bg-slate-800/40">
+                                <span>Q5: Compare BFS vs DFS traversal order and queue/stack implementation.</span>
+                                <i id="viva-icon-5" class="fa-solid fa-chevron-down text-slate-500"></i>
+                            </button>
+                            <div id="viva-ans-5" class="hidden p-3.5 pt-0 text-xs text-slate-400 leading-relaxed border-t border-slate-800/40 font-mono bg-navy-900">
+                                BFS explores neighbors layer-by-layer using a FIFO Queue and finds shortest paths in unweighted graphs. DFS explores deep along paths using a LIFO Stack (or recursion) and uses less memory on deep graphs.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 5: INTERACTIVE QUIZ ENGINE            -->
+        <!-- ========================================== -->
+        <section id="tab-quiz" class="tab-content hidden space-y-6">
+            <div class="glass-panel p-6 rounded-2xl border border-slate-800 max-w-3xl mx-auto">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center">
+                            <i class="fa-solid fa-gamepad mr-2 text-neon-cyan"></i> DAA Knowledge Assessment Quiz
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">Test your algorithmic intuition with timed multiple choice questions.</p>
+                    </div>
+                    <div class="text-right">
+                        <span id="quiz-score" class="text-sm font-mono font-bold text-neon-cyan">Score: 0 / 0</span>
+                    </div>
+                </div>
+
+                <!-- Active Quiz Card -->
+                <div id="quiz-container" class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <span id="quiz-badge" class="px-2.5 py-1 bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/30 text-[10px] font-mono rounded font-bold uppercase">Medium</span>
+                        <span id="quiz-timer" class="text-xs font-mono text-amber-400"><i class="fa-solid fa-clock mr-1"></i> 20s remaining</span>
+                    </div>
+
+                    <h3 id="quiz-question-text" class="text-base font-semibold text-slate-100">
+                        Question text will load here...
+                    </h3>
+
+                    <div id="quiz-options-container" class="grid grid-cols-1 gap-3">
+                        <!-- Dynamically generated options -->
+                    </div>
+
+                    <div id="quiz-feedback" class="hidden p-3 rounded-lg text-xs font-mono"></div>
+
+                    <div class="flex justify-end pt-4 border-t border-slate-800">
+                        <button id="quiz-next-btn" onclick="loadNextQuizQuestion()" class="px-5 py-2 bg-gradient-to-r from-neon-cyan to-blue-600 text-navy-900 font-bold rounded-lg text-xs shadow-neon-cyan disabled:opacity-50">
+                            Next Question <i class="fa-solid fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 6: BACKEND SOURCE CODE & DOCS          -->
+        <!-- ========================================== -->
+        <section id="tab-backend" class="tab-content hidden space-y-6">
+            <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-6">
+                <!-- Header Actions -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center">
+                            <i class="fa-solid fa-folder-tree mr-2 text-neon-violet"></i> Python Flask Backend & Academic Documentation
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">Complete MCA Project submission source files, tests, and execution scripts.</p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="downloadAcademicReport()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-mono border border-slate-700 flex items-center">
+                            <i class="fa-solid fa-file-pdf text-red-400 mr-2"></i> Export Academic Report
+                        </button>
+                        <button onclick="simulateZipDownload()" class="px-3.5 py-2 bg-gradient-to-r from-neon-violet to-purple-600 text-white rounded-lg text-xs font-mono font-bold flex items-center shadow-neon-violet">
+                            <i class="fa-solid fa-download mr-2"></i> Download Complete Project (.ZIP)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Code Viewer Tabs -->
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <!-- File Navigation Sidebar -->
+                    <div class="lg:col-span-1 space-y-1 bg-navy-900/80 p-3 rounded-xl border border-slate-800 text-xs font-mono">
+                        <span class="block text-[10px] text-slate-500 uppercase px-2 mb-2">Project Files</span>
+                        <button onclick="loadCodeFile('app')" class="file-btn active w-full text-left px-2.5 py-2 rounded text-cyan-400 bg-slate-800 flex items-center">
+                            <i class="fa-brands fa-python text-amber-400 mr-2"></i> app.py
+                        </button>
+                        <button onclick="loadCodeFile('sorting')" class="file-btn w-full text-left px-2.5 py-2 rounded text-slate-400 hover:text-white hover:bg-slate-800/50 flex items-center">
+                            <i class="fa-brands fa-python text-amber-400 mr-2"></i> algorithms/sorting.py
+                        </button>
+                        <button onclick="loadCodeFile('searching')" class="file-btn w-full text-left px-2.5 py-2 rounded text-slate-400 hover:text-white hover:bg-slate-800/50 flex items-center">
+                            <i class="fa-brands fa-python text-amber-400 mr-2"></i> algorithms/searching.py
+                        </button>
+                        <button onclick="loadCodeFile('graph')" class="file-btn w-full text-left px-2.5 py-2 rounded text-slate-400 hover:text-white hover:bg-slate-800/50 flex items-center">
+                            <i class="fa-brands fa-python text-amber-400 mr-2"></i> algorithms/graph.py
+                        </button>
+                        <button onclick="loadCodeFile('test')" class="file-btn w-full text-left px-2.5 py-2 rounded text-slate-400 hover:text-white hover:bg-slate-800/50 flex items-center">
+                            <i class="fa-brands fa-python text-amber-400 mr-2"></i> tests/test_algorithms.py
+                        </button>
+                        <button onclick="loadCodeFile('report')" class="file-btn w-full text-left px-2.5 py-2 rounded text-slate-400 hover:text-white hover:bg-slate-800/50 flex items-center">
+                            <i class="fa-solid fa-book text-neon-cyan mr-2"></i> ACADEMIC_SYNOPSIS.md
+                        </button>
+                    </div>
+
+                    <!-- Code Display Window -->
+                    <div class="lg:col-span-3 bg-navy-900 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-3">
+                            <span id="code-filename" class="text-xs font-mono font-bold text-neon-cyan">app.py</span>
+                            <button onclick="copyCurrentCode()" class="text-[11px] font-mono text-slate-400 hover:text-white flex items-center">
+                                <i class="fa-solid fa-copy mr-1"></i> Copy Code
+                            </button>
+                        </div>
+
+                        <pre class="overflow-x-auto text-xs code-font text-slate-300 bg-black/40 p-3 rounded-lg leading-relaxed max-h-96" id="code-content-display">
+                            <!-- Populated dynamically via JS -->
+                        </pre>
+
+                        <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs font-mono text-slate-400">
+                            <span>Execution: <code class="text-neon-cyan">python app.py</code> or run <code class="text-neon-cyan">run_windows.bat</code></span>
+                            <span class="text-emerald-400"><i class="fa-solid fa-circle-check mr-1"></i> PEP-8 Compliant</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800/80 bg-navy-900/60 py-4 px-6 mt-8 text-center text-xs text-slate-500 font-mono">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+            <span>ALGO NEXUS v2.4 — Master of Computer Applications (MCA) Project</span>
+            <span>Design & Analysis of Algorithms Laboratory</span>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        /* ==========================================================================
+           GLOBAL STATE MANAGEMENT
+           ========================================================================== */
+        let currentArray = [];
+        let executionSteps = [];
+        let currentStepIndex = 0;
+        let isPlaying = false;
+        let playTimer = null;
+        let currentAlgorithm = 'bubble';
+        let stepSpeed = 400;
+
+        // Graph Editor State
+        let graphNodes = [];
+        let graphEdges = [];
+        let isGraphMode = false;
+        let selectedNodeForEdge = null;
+
+        // Quiz State
+        let quizIndex = 0;
+        let quizScore = 0;
+        let quizTimerInterval = null;
+        let quizTimeLeft = 20;
+
+        /* ==========================================================================
+           TAB NAVIGATION
+           ========================================================================== */
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(el => {
+                el.classList.remove('bg-cyan-500/20', 'text-neon-cyan', 'border', 'border-cyan-500/40');
+                el.classList.add('text-slate-400');
+            });
+
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-cyan-500/20', 'text-neon-cyan', 'border', 'border-cyan-500/40');
+                activeBtn.classList.remove('text-slate-400');
+            }
+
+            if (tabId === 'benchmarks') {
+                runBenchmarkSuite();
+            } else if (tabId === 'quiz') {
+                initQuizEngine();
+            } else if (tabId === 'backend') {
+                loadCodeFile('app');
+            }
+        }
+
+        /* ==========================================================================
+           VISUALIZER CORE & ALGORITHMS LOGIC
+           ========================================================================== */
+        window.onload = function() {
+            initGraphDefaultData();
+            onAlgoChange();
+            setupSpeedSlider();
+            setupGraphCanvasListeners();
+        };
+
+        function setupSpeedSlider() {
+            const slider = document.getElementById('speed-slider');
+            slider.addEventListener('input', (e) => {
+                stepSpeed = parseInt(e.target.value);
+                const multiplier = (1000 / stepSpeed).toFixed(1);
+                document.getElementById('speed-display').innerText = multiplier + 'x';
+                if (isPlaying) {
+                    pauseExecution();
+                    startExecution();
+                }
+            });
+        }
+
+        function onAlgoChange() {
+            pauseExecution();
+            currentAlgorithm = document.getElementById('algo-select').value;
+            isGraphMode = ['bfs', 'dfs', 'dijkstra'].includes(currentAlgorithm);
+
+            const arrayControls = document.getElementById('array-controls');
+            const graphControls = document.getElementById('graph-controls');
+            const barsContainer = document.getElementById('bars-container');
+            const graphCanvas = document.getElementById('graph-canvas');
+
+            if (isGraphMode) {
+                arrayControls.classList.add('hidden');
+                graphControls.classList.remove('hidden');
+                graphControls.classList.add('flex');
+                barsContainer.classList.add('hidden');
+                graphCanvas.classList.remove('hidden');
+                renderGraphCanvas();
+            } else {
+                arrayControls.classList.remove('hidden');
+                graphControls.classList.add('hidden');
+                graphControls.classList.remove('flex');
+                barsContainer.classList.remove('hidden');
+                graphCanvas.classList.add('hidden');
+                generateNewArray();
+            }
+
+            updatePseudocodeView();
+            resetVisualization();
+        }
+
+        function generateNewArray() {
+            pauseExecution();
+            const size = parseInt(document.getElementById('array-size').value);
+            document.getElementById('size-val').innerText = size;
+            
+            currentArray = [];
+            for (let i = 0; i < size; i++) {
+                currentArray.push(Math.floor(Math.random() * 85) + 15);
+            }
+
+            if (currentAlgorithm === 'binary') {
+                currentArray.sort((a, b) => a - b);
+            }
+
+            buildExecutionSteps();
+            resetVisualization();
+        }
+
+        function buildExecutionSteps() {
+            executionSteps = [];
+            const arr = [...currentArray];
+
+            if (currentAlgorithm === 'bubble') buildBubbleSortSteps(arr);
+            else if (currentAlgorithm === 'selection') buildSelectionSortSteps(arr);
+            else if (currentAlgorithm === 'insertion') buildInsertionSortSteps(arr);
+            else if (currentAlgorithm === 'merge') buildMergeSortSteps(arr);
+            else if (currentAlgorithm === 'quick') buildQuickSortSteps(arr);
+            else if (currentAlgorithm === 'linear') buildLinearSearchSteps(arr);
+            else if (currentAlgorithm === 'binary') buildBinarySearchSteps(arr);
+            else if (['bfs', 'dfs', 'dijkstra'].includes(currentAlgorithm)) buildGraphSteps();
+
+            document.getElementById('step-counter').innerText = `Step 0 / ${executionSteps.length - 1}`;
+        }
+
+        /* --- Bubble Sort Step Builder --- */
+        function buildBubbleSortSteps(arr) {
+            let n = arr.length;
+            let comparisons = 0, swaps = 0;
+            executionSteps.push({ arr: [...arr], active: [], sorted: [], text: "Initial unsorted array state.", comparisons, swaps });
+
+            for (let i = 0; i < n - 1; i++) {
+                for (let j = 0; j < n - i - 1; j++) {
+                    comparisons++;
+                    executionSteps.push({
+                        arr: [...arr], active: [j, j + 1], sorted: Array.from({length: i}, (_, k) => n - 1 - k),
+                        text: `Comparing elements at index ${j} (${arr[j]}) and ${j+1} (${arr[j+1]})`, comparisons, swaps
+                    });
+                    if (arr[j] > arr[j + 1]) {
+                        swaps++;
+                        let temp = arr[j]; arr[j] = arr[j + 1]; arr[j + 1] = temp;
+                        executionSteps.push({
+                            arr: [...arr], swapping: [j, j + 1], sorted: Array.from({length: i}, (_, k) => n - 1 - k),
+                            text: `Swapped ${arr[j+1]} and ${arr[j]} because ${arr[j+1]} > ${arr[j]}`, comparisons, swaps
+                        });
+                    }
+                }
+            }
+            executionSteps.push({ arr: [...arr], active: [], sorted: arr.map((_, i) => i), text: "Array completely sorted!", comparisons, swaps });
+        }
+
+        /* --- Selection Sort Step Builder --- */
+        function buildSelectionSortSteps(arr) {
+            let n = arr.length;
+            let comparisons = 0, swaps = 0;
+            executionSteps.push({ arr: [...arr], active: [], sorted: [], text: "Initial array.", comparisons, swaps });
+
+            for (let i = 0; i < n; i++) {
+                let minIdx = i;
+                for (let j = i + 1; j < n; j++) {
+                    comparisons++;
+                    if (arr[j] < arr[minIdx]) minIdx = j;
+                    executionSteps.push({ arr: [...arr], active: [j, minIdx], sorted: Array.from({length: i}, (_, k) => k), text: `Finding minimum element. Current min index: ${minIdx}`, comparisons, swaps });
+                }
+                if (minIdx !== i) {
+                    swaps++;
+                    let temp = arr[i]; arr[i] = arr[minIdx]; arr[minIdx] = temp;
+                    executionSteps.push({ arr: [...arr], swapping: [i, minIdx], sorted: Array.from({length: i + 1}, (_, k) => k), text: `Swapped minimum element ${arr[i]} into sorted position ${i}`, comparisons, swaps });
+                }
+            }
+            executionSteps.push({ arr: [...arr], active: [], sorted: arr.map((_, i) => i), text: "Selection Sort completed.", comparisons, swaps });
+        }
+
+        /* --- Insertion Sort Step Builder --- */
+        function buildInsertionSortSteps(arr) {
+            let n = arr.length;
+            let comparisons = 0, swaps = 0;
+            executionSteps.push({ arr: [...arr], active: [], sorted: [0], text: "First element is initially sorted.", comparisons, swaps });
+
+            for (let i = 1; i < n; i++) {
+                let key = arr[i];
+                let j = i - 1;
+                executionSteps.push({ arr: [...arr], active: [i], sorted: Array.from({length: i}, (_, k) => k), text: `Picked key element ${key} at index ${i}`, comparisons, swaps });
+
+                while (j >= 0 && arr[j] > key) {
+                    comparisons++;
+                    swaps++;
+                    arr[j + 1] = arr[j];
+                    executionSteps.push({ arr: [...arr], swapping: [j, j + 1], sorted: [], text: `Shifted ${arr[j]} rightwards`, comparisons, swaps });
+                    j--;
+                }
+                arr[j + 1] = key;
+                executionSteps.push({ arr: [...arr], sorted: Array.from({length: i + 1}, (_, k) => k), text: `Inserted key ${key} at index ${j + 1}`, comparisons, swaps });
+            }
+            executionSteps.push({ arr: [...arr], sorted: arr.map((_, i) => i), text: "Insertion Sort completed.", comparisons, swaps });
+        }
+
+        /* --- Merge Sort Helper Step Builder --- */
+        function buildMergeSortSteps(arr) {
+            let comparisons = 0, swaps = 0;
+            executionSteps.push({ arr: [...arr], active: [], sorted: [], text: "Starting Merge Sort recursion.", comparisons, swaps });
+
+            function merge(a, l, m, r) {
+                let left = a.slice(l, m + 1);
+                let right = a.slice(m + 1, r + 1);
+                let i = 0, j = 0, k = l;
+
+                while (i < left.length && j < right.length) {
+                    comparisons++;
+                    executionSteps.push({ arr: [...a], active: [k], text: `Comparing subarray left [${left[i]}] and right [${right[j]}]`, comparisons, swaps });
+                    if (left[i] <= right[j]) {
+                        a[k] = left[i]; i++;
+                    } else {
+                        a[k] = right[j]; j++;
+                        swaps++;
+                    }
+                    executionSteps.push({ arr: [...a], swapping: [k], text: `Placed element ${a[k]} in index ${k}`, comparisons, swaps });
+                    k++;
+                }
+                while (i < left.length) {
+                    a[k] = left[i]; i++; k++;
+                    executionSteps.push({ arr: [...a], swapping: [k-1], text: `Flushed remaining left element`, comparisons, swaps });
+                }
+                while (j < right.length) {
+                    a[k] = right[j]; j++; k++;
+                    executionSteps.push({ arr: [...a], swapping: [k-1], text: `Flushed remaining right element`, comparisons, swaps });
+                }
+            }
+
+            function mergeSort(a, l, r) {
+                if (l >= r) return;
+                let m = l + Math.floor((r - l) / 2);
+                mergeSort(a, l, m);
+                mergeSort(a, m + 1, r);
+                merge(a, l, m, r);
+            }
+
+            mergeSort(arr, 0, arr.length - 1);
+            executionSteps.push({ arr: [...arr], sorted: arr.map((_, i) => i), text: "Merge Sort completed successfully.", comparisons, swaps });
+        }
+
+        /* --- Quick Sort Step Builder --- */
+        function buildQuickSortSteps(arr) {
+            let comparisons = 0, swaps = 0;
+            executionSteps.push({ arr: [...arr], active: [], sorted: [], text: "Starting Quick Sort.", comparisons, swaps });
+
+            function partition(a, low, high) {
+                let pivot = a[high];
+                let i = low - 1;
+                executionSteps.push({ arr: [...a], active: [high], text: `Selected pivot element ${pivot} at index ${high}`, comparisons, swaps });
+
+                for (let j = low; j < high; j++) {
+                    comparisons++;
+                    if (a[j] < pivot) {
+                        i++;
+                        swaps++;
+                        let temp = a[i]; a[i] = a[j]; a[j] = temp;
+                        executionSteps.push({ arr: [...a], swapping: [i, j], text: `Swapped ${a[i]} and ${a[j]}`, comparisons, swaps });
+                    }
+                }
+                swaps++;
+                let temp = a[i + 1]; a[i + 1] = a[high]; a[high] = temp;
+                executionSteps.push({ arr: [...a], sorted: [i + 1], text: `Placed pivot ${pivot} into its correct position ${i + 1}`, comparisons, swaps });
+                return i + 1;
+            }
+
+            function quickSort(a, low, high) {
+                if (low < high) {
+                    let pi = partition(a, low, high);
+                    quickSort(a, low, pi - 1);
+                    quickSort(a, pi + 1, high);
+                }
+            }
+
+            quickSort(arr, 0, arr.length - 1);
+            executionSteps.push({ arr: [...arr], sorted: arr.map((_, i) => i), text: "Quick Sort completed.", comparisons, swaps });
+        }
+
+        /* --- Searching Algorithms Step Builders --- */
+        function buildLinearSearchSteps(arr) {
+            const target = parseInt(document.getElementById('target-value').value);
+            let comparisons = 0;
+            let found = false;
+
+            for (let i = 0; i < arr.length; i++) {
+                comparisons++;
+                if (arr[i] === target) {
+                    executionSteps.push({ arr: [...arr], sorted: [i], text: `TARGET FOUND! Element ${target} exists at index ${i}`, comparisons, swaps: 0 });
+                    found = true;
+                    break;
+                } else {
+                    executionSteps.push({ arr: [...arr], active: [i], text: `Index ${i}: Value ${arr[i]} != ${target}`, comparisons, swaps: 0 });
+                }
+            }
+            if (!found) {
+                executionSteps.push({ arr: [...arr], active: [], text: `Target ${target} not found in array.`, comparisons, swaps: 0 });
+            }
+        }
+
+        function buildBinarySearchSteps(arr) {
+            const target = parseInt(document.getElementById('target-value').value);
+            let comparisons = 0;
+            let low = 0, high = arr.length - 1;
+            let found = false;
+
+            while (low <= high) {
+                let mid = Math.floor((low + high) / 2);
+                comparisons++;
+                executionSteps.push({ arr: [...arr], active: [mid], text: `Search window [${low}..${high}]. Checking mid index ${mid} (${arr[mid]})`, comparisons, swaps: 0 });
+
+                if (arr[mid] === target) {
+                    executionSteps.push({ arr: [...arr], sorted: [mid], text: `SUCCESS! Target ${target} located at index ${mid}`, comparisons, swaps: 0 });
+                    found = true;
+                    break;
+                } else if (arr[mid] < target) {
+                    low = mid + 1;
+                } else {
+                    high = mid - 1;
+                }
+            }
+            if (!found) {
+                executionSteps.push({ arr: [...arr], active: [], text: `Target ${target} does not exist in array.`, comparisons, swaps: 0 });
+            }
+        }
+
+        /* ==========================================================================
+           GRAPH ALGORITHMS LOGIC & INTERACTIVE CANVAS EDITOR
+           ========================================================================== */
+        function initGraphDefaultData() {
+            graphNodes = [
+                { id: 0, x: 100, y: 80, label: 'A' },
+                { id: 1, x: 260, y: 60, label: 'B' },
+                { id: 2, x: 140, y: 220, label: 'C' },
+                { id: 3, x: 320, y: 200, label: 'D' },
+                { id: 4, x: 450, y: 120, label: 'E' }
+            ];
+            graphEdges = [
+                { u: 0, v: 1, weight: 4 },
